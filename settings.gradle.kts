@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CareerConnect"
+rootProject.name = "Career Connect"
 include(":app")
  

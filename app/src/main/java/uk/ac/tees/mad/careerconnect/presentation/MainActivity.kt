@@ -1,4 +1,4 @@
-package uk.ac.tees.mad.careerconnect
+package uk.ac.tees.mad.careerconnect.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,18 +11,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import uk.ac.tees.mad.careerconnect.presentation.auth.AuthViewModel
+import uk.ac.tees.mad.careerconnect.presentation.home.HomeViewModel
+import uk.ac.tees.mad.careerconnect.presentation.navigation.Navigation
 import uk.ac.tees.mad.careerconnect.ui.theme.CareerConnectTheme
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val authViewModel: AuthViewModel = hiltViewModel()
+            val homeViewModel: HomeViewModel = hiltViewModel()
             CareerConnectTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                Scaffold( modifier = Modifier.fillMaxSize() ) { innerPadding ->
+                    Navigation(
+                        modifier = Modifier.padding(innerPadding),
+                        authViewModel = authViewModel,
+                        homeViewModel = homeViewModel
                     )
                 }
             }
