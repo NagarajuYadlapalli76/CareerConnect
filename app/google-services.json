@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "828855416531",
+    "project_id": "career-connect-73fd2",
+    "storage_bucket": "career-connect-73fd2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:828855416531:android:260c0606922f9aa7100626",
+        "android_client_info": {
+          "package_name": "uk.ac.tees.mad.careerconnect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "828855416531-1i14aggu33i1ehmhg88fhij0o22qtogi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uk.ac.tees.mad.careerconnect",
+            "certificate_hash": "aa9b2fef4575569bd5c36c45235f8f2b2dc452cd"
+          }
+        },
+        {
+          "client_id": "828855416531-mhri1lkubrdeicd79m9tiofbolqi42is.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkHn18qcQekMh4Ex_ok0bhpwxjPIZZmlw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "828855416531-mhri1lkubrdeicd79m9tiofbolqi42is.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

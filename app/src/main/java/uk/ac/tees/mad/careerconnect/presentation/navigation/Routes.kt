@@ -6,10 +6,17 @@ sealed class Routes {
     data object AuthScreen
 
     @kotlinx.serialization.Serializable
-   data  object SingInScreen
+    data object SingInScreen
 
     @kotlinx.serialization.Serializable
-   data  object LogInScreen
+    data object LogInScreen
+
+    @kotlinx.serialization.Serializable
+    data object HomeScreen
+
+    @kotlinx.serialization.Serializable
+    data object ProfileScreen
+
 }
 
 
