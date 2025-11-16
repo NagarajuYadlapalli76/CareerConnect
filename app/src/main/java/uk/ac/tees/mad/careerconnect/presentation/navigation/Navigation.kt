@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.careerconnect.presentation.navigation
 
+
 import AuthScreen
 import SignUpScreen
 import androidx.compose.runtime.Composable
@@ -9,20 +10,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-
-
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
-
-
 import uk.ac.tees.mad.careerconnect.presentation.auth.AuthViewModel
 import uk.ac.tees.mad.careerconnect.presentation.auth.LoginScreen
 import uk.ac.tees.mad.careerconnect.presentation.home.HomeScreen
 import uk.ac.tees.mad.careerconnect.presentation.home.HomeViewModel
-
-import uk.ac.tees.mad.careerconnect.presentation.home.ProfileScreen
 
 @Composable
 fun Navigation(
@@ -47,7 +42,7 @@ fun Navigation(
     val startDestination = if (currentUser == null) {
         Routes.AuthScreen
     } else {
-        Routes.ProfileScreen
+        Routes.HomeScreen
     }
 
     val navController = rememberNavController()
@@ -56,8 +51,10 @@ fun Navigation(
         composable<Routes.AuthScreen> {
 
 
-            AuthScreen( authViewModel = authViewModel,
-                navController = navController)
+            AuthScreen(
+                authViewModel = authViewModel,
+                navController = navController
+            )
 
         }
 
@@ -75,17 +72,9 @@ fun Navigation(
 
 
             HomeScreen(
+                navController = navController,
                 authViewModel = authViewModel,
-                navController = navController
-            )
-
-        }
-        composable<Routes.ProfileScreen> {
-
-
-            ProfileScreen(
-                authViewModel = authViewModel,
-                navController = navController
+                homeViewModel = homeViewModel
             )
 
         }

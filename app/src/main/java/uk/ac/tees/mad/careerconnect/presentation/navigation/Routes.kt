@@ -14,8 +14,7 @@ sealed class Routes {
     @kotlinx.serialization.Serializable
     data object HomeScreen
 
-    @kotlinx.serialization.Serializable
-    data object ProfileScreen
+
 
 }
 
