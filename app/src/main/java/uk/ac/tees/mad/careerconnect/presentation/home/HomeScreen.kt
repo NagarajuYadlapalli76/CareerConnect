@@ -62,12 +62,13 @@ fun HomeScreen(
     Scaffold(modifier.fillMaxSize(), bottomBar = {
         NavigationBar(
             modifier = Modifier.height(70.dp),
-            containerColor = Color(0xFF9094FC)
+            containerColor = Color(0xFF3B6CFF)
         ) {
 
             navItems.fastForEachIndexed() { index, navItem ->
                 val isSelected = selectedIndex == index
                 NavigationBarItem(
+                    modifier = Modifier.offset(y = 10.dp),
                     selected = false,
                     onClick = {
                         selectedIndex = index
@@ -76,7 +77,7 @@ fun HomeScreen(
                         Icon(
                             imageVector = if (isSelected) navItem.filledIcon else navItem.outlinedIcon,
                             contentDescription = null,
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.background
 
                         )
                     },
@@ -84,7 +85,7 @@ fun HomeScreen(
                         Text(
                             text = navItem.title,
                             modifier = Modifier.offset(y = (-4).dp),
-                            color =  Color.Black
+                            color =  MaterialTheme.colorScheme.background
                         )
                     }
                 )
@@ -135,9 +136,8 @@ fun ContentScreen(
 
 
             2 -> ProfilePage(
-                authViewModel = authViewModel,
-                homeViewModel = homeViewModel,
-                navController = navController,
+                authViewModel = authViewModel
+
 
             )
 

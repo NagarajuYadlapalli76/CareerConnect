@@ -25,8 +25,10 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserInfo
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -36,18 +38,19 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import uk.ac.tees.mad.careerconnect.R
-import uk.ac.tees.mad.careerconnect.data.repoImpl.RepositoryImpl
-import uk.ac.tees.mad.careerconnect.domain.repo.Repository
+import uk.ac.tees.mad.careerconnect.data.remote.SupabaseClientProvider
+
 import java.security.MessageDigest
+import java.util.StringTokenizer
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.jvm.java
 
 @HiltViewModel
 class AuthViewModel @Inject constructor() : ViewModel() {
 
 
     private val _currentUserData = MutableStateFlow(GetUserInfo())
-
     val currentUserData: StateFlow<GetUserInfo> = _currentUserData
 
     val db = FirebaseFirestore.getInstance()
@@ -60,6 +63,10 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 
     }
 
+    init {
+        fetchCurrentDonerData()
+    }
+
     fun signUp(
         email: String,
         password: String,
@@ -69,41 +76,44 @@ class AuthViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             try {
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            val user = auth.currentUser
-                            val userId = user?.uid
+                    if (task.isSuccessful) {
+                        val user = auth.currentUser
+                        val userId = user?.uid
 
-                            if (userId != null) {
-                                // Create donor info
-                                val userInfo = PostUserInfo(
-                                    profileImageUrl = "",
-                                    title = "Job Seeker",
-                                    mobNumber = "7668532625",
-                                    name = name,
-                                    email = email,
-                                    uid = userId,
-                                    passkey = password
-                                )
+                        if (userId != null) {
+                            // Create donor info
+                            val userInfo = PostUserInfo(
+                                profileImageUrl = "",
+                                title = "Job Seeker",
+                                mobNumber = "",
+                                name = name,
+                                email = email,
+                                uid = userId,
+                                passkey = password,
+                                resumePddUrl = "",
+                                AppliedJob = emptyList(),
+                                LickedJob = emptyList()
+                            )
 
-                                db.collection("user").document(userId).set(userInfo)
-                                    .addOnSuccessListener {
-                                        onResult("Signup successful", true)
-                                    }.addOnFailureListener { exception ->
-                                        auth.currentUser?.delete() // rollback user creation
-                                        onResult("Failed to save user info", false)
-                                    }
-                            } else {
-                                onResult("User ID not found", false)
-                            }
+                            db.collection("user").document(userId).set(userInfo)
+                                .addOnSuccessListener {
+                                    onResult("Signup successful", true)
+                                }.addOnFailureListener { exception ->
+                                    auth.currentUser?.delete() // rollback user creation
+                                    onResult("Failed to save user info", false)
+                                }
                         } else {
-                            val errorMessage = when (task.exception) {
-                                is FirebaseAuthUserCollisionException -> "This email is already registered"
-                                is FirebaseAuthWeakPasswordException -> "Password is too weak"
-                                else -> task.exception?.localizedMessage ?: "Signup failed"
-                            }
-                            onResult(errorMessage, false)
+                            onResult("User ID not found", false)
                         }
+                    } else {
+                        val errorMessage = when (task.exception) {
+                            is FirebaseAuthUserCollisionException -> "This email is already registered"
+                            is FirebaseAuthWeakPasswordException -> "Password is too weak"
+                            else -> task.exception?.localizedMessage ?: "Signup failed"
+                        }
+                        onResult(errorMessage, false)
                     }
+                }
             } catch (e: Exception) {
                 onResult("Unexpected error: ${e.localizedMessage}", false)
             }
@@ -119,13 +129,13 @@ class AuthViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             try {
                 auth.signInWithEmailAndPassword(email, passkey).addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            onResult("Login successful", true)
-                        } else {
-                            val errorMessage = task.exception?.localizedMessage ?: "Login failed"
-                            onResult(errorMessage, false)
-                        }
+                    if (task.isSuccessful) {
+                        onResult("Login successful", true)
+                    } else {
+                        val errorMessage = task.exception?.localizedMessage ?: "Login failed"
+                        onResult(errorMessage, false)
                     }
+                }
             } catch (e: Exception) {
                 onResult("Error: ${e.localizedMessage}", false)
             }
@@ -134,44 +144,44 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 
     fun handleGoogleSignIn(
         context: Context,
-        onResult: (String, Boolean) -> Unit
+        onResult: (String, Boolean) -> Unit,
     ) {
         viewModelScope.launch {
             googleSignIn(context).collect { result ->
-                result.fold(
-                    onSuccess = { authResult ->
-                        val currentUser = authResult.user
-                        if (currentUser != null) {
-                            val postUserInfo = PostUserInfo(
-                                profileImageUrl = currentUser.photoUrl?.toString() ?: "",
-                                title = "",
-                                mobNumber = "7668532625", // ⚠️ hardcoded, maybe replace later
-                                name = currentUser.displayName ?: "",
-                                email = currentUser.email ?: "",
-                                uid = currentUser.uid,
-                                passkey = "" // Google users don’t need a password here
-                            )
+                result.fold(onSuccess = { authResult ->
+                    val currentUser = authResult.user
+                    if (currentUser != null) {
+                        val postUserInfo = PostUserInfo(
+                            profileImageUrl = currentUser.photoUrl?.toString() ?: "",
+                            title = "",
+                            mobNumber = "", // ⚠️ hardcoded, maybe replace later
+                            name = currentUser.displayName ?: "",
+                            email = currentUser.email ?: "",
+                            uid = currentUser.uid,
+                            passkey = "",
+                            resumePddUrl = "",
+                            AppliedJob = emptyList(),
+                            LickedJob = emptyList()
+                        )
 
-                            db.collection("user").document(currentUser.uid)
-                                .set(postUserInfo)
-                                .addOnSuccessListener {
-                                    onResult("Signup successful", true)
-                                }
-                                .addOnFailureListener { exception ->
-                                    onResult("Failed to save user info: ${exception.localizedMessage}", false)
-                                }
-                        } else {
-                            onResult("Google sign-in failed: user is null", false)
-                        }
-                    },
-                    onFailure = { e ->
-                        onResult("Google sign-in failed: ${e.localizedMessage}", false)
+                        db.collection("user").document(currentUser.uid).set(postUserInfo)
+                            .addOnSuccessListener {
+                                onResult("Signup successful", true)
+                            }.addOnFailureListener { exception ->
+                                onResult(
+                                    "Failed to save user info: ${exception.localizedMessage}",
+                                    false
+                                )
+                            }
+                    } else {
+                        onResult("Google sign-in failed: user is null", false)
                     }
-                )
+                }, onFailure = { e ->
+                    onResult("Google sign-in failed: ${e.localizedMessage}", false)
+                })
             }
         }
     }
-
 
 
     private suspend fun googleSignIn(context: Context): Flow<Result<AuthResult>> {
@@ -181,22 +191,18 @@ class AuthViewModel @Inject constructor() : ViewModel() {
             try {
                 val credentialManager = CredentialManager.create(context)
 
-                val googleIdOption = GetGoogleIdOption.Builder()
-                    .setFilterByAuthorizedAccounts(false)
-                    .setServerClientId("828855416531-mhri1lkubrdeicd79m9tiofbolqi42is.apps.googleusercontent.com")
-                    .setAutoSelectEnabled(true)
-                    .build()
+                val googleIdOption =
+                    GetGoogleIdOption.Builder().setFilterByAuthorizedAccounts(false)
+                        .setServerClientId("828855416531-mhri1lkubrdeicd79m9tiofbolqi42is.apps.googleusercontent.com")
+                        .setAutoSelectEnabled(true).build()
 
-                val request = GetCredentialRequest.Builder()
-                    .addCredentialOption(googleIdOption)
-                    .build()
+                val request =
+                    GetCredentialRequest.Builder().addCredentialOption(googleIdOption).build()
 
                 val result = credentialManager.getCredential(context, request)
                 val credential = result.credential
 
-                if (credential is CustomCredential &&
-                    credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
-                ) {
+                if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                     val googleIdTokenCredential =
                         GoogleIdTokenCredential.createFrom(credential.data)
 
@@ -219,25 +225,103 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     }
 
 
+    fun updateProfile(
+        ProfielImageByteArray: ByteArray,
+        ResumePdfByteArray: ByteArray,
+        name: String,
+        mobNumber: String,
+        onResult: (String, Boolean) -> Unit,
+    ) {
+        viewModelScope.launch {
+            val userId = auth.currentUser?.uid ?: return@launch
+            val imageFileName = "profile_images/$userId.jpg" // unique image per user
+            val pdfFileName = "profile_images/$userId.pdf" // unique image per user
+
+
+
+            try {
+
+                val ImageBucket = SupabaseClientProvider.client.storage["profile_images"]
+                ImageBucket.upload(imageFileName, ProfielImageByteArray, upsert = true)
+
+
+                val profileImageUrl = ImageBucket.publicUrl(imageFileName)
+
+
+                val bucket = SupabaseClientProvider.client.storage["resume"]
+                bucket.upload(pdfFileName, ResumePdfByteArray, upsert = true)
+
+
+                val pdfUrl = bucket.publicUrl(pdfFileName)
+
+
+                val updates = mapOf(
+                    "profileImageUrl" to profileImageUrl,
+                    "resumePddUrl" to pdfUrl,
+                    "name" to name,
+                    "mobNumber" to mobNumber,
+                )
+
+                db.collection("user").document(userId).update(updates).addOnSuccessListener {
+                        onResult("Profile Update Success", true)
+                    }.addOnFailureListener { e ->
+                        onResult(e.toString(), false)
+                    }
+
+
+            } catch (e: Exception) {
+                onResult(e.toString(), false)
+            }
+        }
+    }
+
+
+    fun fetchCurrentDonerData() {
+        auth.currentUser?.uid?.let { userId ->
+
+            db.collection("user").document(userId).addSnapshotListener { snapshot, e ->
+
+                    if (e != null) {
+
+                        return@addSnapshotListener
+                    }
+
+                    if (snapshot != null && snapshot.exists()) {
+                        val data = snapshot.toObject(GetUserInfo::class.java)
+                        data?.let {
+                            _currentUserData.value = it
+                        }
+                    }
+                }
+        }
+    }
+
+
 }
 
 
 data class PostUserInfo(
     val profileImageUrl: String,
+    val resumePddUrl: String,
     val title: String,
     val mobNumber: String,
     val name: String,
     val email: String,
     val uid: String,
     val passkey: String,
+    val AppliedJob: List<String>,
+    val LickedJob: List<String> ,
 )
 
 data class GetUserInfo(
     val profileImageUrl: String = "",
+    val resumePddUrl: String = "",
     val title: String = "",
     val mobNumber: String = "",
     val name: String = "",
     val email: String = "",
     val uid: String = "",
     val passkey: String = "",
+    val AppliedJob: List<String> = emptyList<String>(),
+    val LickedJob: List<String> = emptyList<String>(),
 )
