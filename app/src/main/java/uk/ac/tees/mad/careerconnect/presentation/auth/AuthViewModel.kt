@@ -39,7 +39,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import uk.ac.tees.mad.careerconnect.R
 import uk.ac.tees.mad.careerconnect.data.remote.SupabaseClientProvider
-
+import uk.ac.tees.mad.careerconnect.data.repoImpl.RepositoryImpl
+import uk.ac.tees.mad.careerconnect.domain.repo.Repository
 import java.security.MessageDigest
 import java.util.StringTokenizer
 import java.util.UUID
@@ -51,6 +52,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 
 
     private val _currentUserData = MutableStateFlow(GetUserInfo())
+
     val currentUserData: StateFlow<GetUserInfo> = _currentUserData
 
     val db = FirebaseFirestore.getInstance()
@@ -85,14 +87,13 @@ class AuthViewModel @Inject constructor() : ViewModel() {
                             val userInfo = PostUserInfo(
                                 profileImageUrl = "",
                                 title = "Job Seeker",
-                                mobNumber = "",
+                                mobNumber = "7668532625",
                                 name = name,
                                 email = email,
                                 uid = userId,
                                 passkey = password,
                                 resumePddUrl = "",
-                                AppliedJob = emptyList(),
-                                LickedJob = emptyList()
+                                AppliedJob = emptyList()
                             )
 
                             db.collection("user").document(userId).set(userInfo)
@@ -154,14 +155,13 @@ class AuthViewModel @Inject constructor() : ViewModel() {
                         val postUserInfo = PostUserInfo(
                             profileImageUrl = currentUser.photoUrl?.toString() ?: "",
                             title = "",
-                            mobNumber = "", // ⚠️ hardcoded, maybe replace later
+                            mobNumber = "7668532625", // ⚠️ hardcoded, maybe replace later
                             name = currentUser.displayName ?: "",
                             email = currentUser.email ?: "",
                             uid = currentUser.uid,
                             passkey = "",
                             resumePddUrl = "",
-                            AppliedJob = emptyList(),
-                            LickedJob = emptyList()
+                            AppliedJob = emptyList()
                         )
 
                         db.collection("user").document(currentUser.uid).set(postUserInfo)
@@ -310,7 +310,6 @@ data class PostUserInfo(
     val uid: String,
     val passkey: String,
     val AppliedJob: List<String>,
-    val LickedJob: List<String> ,
 )
 
 data class GetUserInfo(
@@ -323,5 +322,4 @@ data class GetUserInfo(
     val uid: String = "",
     val passkey: String = "",
     val AppliedJob: List<String> = emptyList<String>(),
-    val LickedJob: List<String> = emptyList<String>(),
 )

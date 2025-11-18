@@ -31,7 +31,7 @@ import uk.ac.tees.mad.careerconnect.presentation.auth.AuthViewModel
 import uk.ac.tees.mad.careerconnect.presentation.navigation.Routes
 
 @Composable
-fun AuthScreen(navController: NavHostController, authViewModel: AuthViewModel) {
+fun AuthScreen(authViewModel: AuthViewModel, navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()

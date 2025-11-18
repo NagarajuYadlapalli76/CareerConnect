@@ -15,12 +15,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.google.firebase.auth.FirebaseAuth
+import okhttp3.Route
 import uk.ac.tees.mad.careerconnect.presentation.auth.AuthViewModel
 import uk.ac.tees.mad.careerconnect.presentation.auth.LoginScreen
 import uk.ac.tees.mad.careerconnect.presentation.home.HomeScreen
 import uk.ac.tees.mad.careerconnect.presentation.home.HomeViewModel
-import uk.ac.tees.mad.careerconnect.presentation.home.SavedJobs
-import uk.ac.tees.mad.careerconnect.presentation.home.utilsScreen.JobDetailScreen
 
 @Composable
 fun Navigation(
@@ -101,40 +100,6 @@ fun Navigation(
             LoginScreen(
                 authViewModel = authViewModel,
 
-                navController = navController
-            )
-
-        }
-
-
-        composable<Routes.JobDetailScreen> {
-            val arg = it.toRoute<Routes.JobDetailScreen>()
-
-
-            JobDetailScreen(
-                title = arg.title,
-                compName = arg.compName,
-                location = arg.location,
-                type = arg.type,
-                numApplications = arg.numApplications,
-                minSalary = arg.minSalary,
-                maxSalary = arg.maxSalary,
-                description = arg.description,
-                publishedDate = arg.publishedDate,
-                requirements = arg.requirements,
-                id = arg.id,
-                onBackClick = { navController.popBackStack()},
-                homeViewModel = homeViewModel,
-            )
-
-
-        }
-
-        composable<Routes.SavedJobSScreen> {
-
-
-            SavedJobs(
-                homeViewModel = homeViewModel,
                 navController = navController
             )
 

@@ -68,7 +68,6 @@ fun HomeScreen(
             navItems.fastForEachIndexed() { index, navItem ->
                 val isSelected = selectedIndex == index
                 NavigationBarItem(
-                    modifier = Modifier.offset(y = 10.dp),
                     selected = false,
                     onClick = {
                         selectedIndex = index
@@ -77,7 +76,7 @@ fun HomeScreen(
                         Icon(
                             imageVector = if (isSelected) navItem.filledIcon else navItem.outlinedIcon,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.background
+                            tint = Color.Black
 
                         )
                     },
@@ -85,7 +84,7 @@ fun HomeScreen(
                         Text(
                             text = navItem.title,
                             modifier = Modifier.offset(y = (-4).dp),
-                            color =  MaterialTheme.colorScheme.background
+                            color =  Color.Black
                         )
                     }
                 )

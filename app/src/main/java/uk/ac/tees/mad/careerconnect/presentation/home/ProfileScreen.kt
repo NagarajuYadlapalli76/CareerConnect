@@ -1,15 +1,12 @@
 package uk.ac.tees.mad.careerconnect.presentation.home
 
 
-import android.R.attr.text
 import android.app.Activity
 import android.content.ContentResolver
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.provider.OpenableColumns
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -47,7 +44,6 @@ import uk.ac.tees.mad.careerconnect.presentation.auth.AuthViewModel
 
 
 import androidx.compose.runtime.*
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
@@ -65,19 +61,6 @@ fun ProfilePage(
 
     val currentUser = authViewModel.currentUserData.collectAsState().value
 
-    fun getFileNameFromUri(context: Context, uri: Uri): String {
-        var name = ""
-        val cursor = context.contentResolver.query(uri, null, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val index = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (index != -1) {
-                    name = it.getString(index)
-                }
-            }
-        }
-        return name
-    }
 
     var newMobile by rememberSaveable { mutableStateOf("") }
     var newName by rememberSaveable { mutableStateOf("") }
@@ -90,16 +73,14 @@ fun ProfilePage(
     val scope = rememberCoroutineScope()
 
 
-    LaunchedEffect(update) {
-        authViewModel.currentUserData
-
-
-    }
-
     val freshUrl = "${currentUser.profileImageUrl}?t=${System.currentTimeMillis()}"
 
-    val imageRequest = ImageRequest.Builder(context).data(freshUrl).crossfade(true)
-        .diskCachePolicy(CachePolicy.ENABLED).memoryCachePolicy(CachePolicy.ENABLED).build()
+    val imageRequest = ImageRequest.Builder(context)
+        .data(freshUrl)
+        .crossfade(true)
+        .diskCachePolicy(CachePolicy.ENABLED)
+        .memoryCachePolicy(CachePolicy.ENABLED)
+        .build()
 
 
     val painter = rememberAsyncImagePainter(model = imageRequest)
@@ -116,29 +97,24 @@ fun ProfilePage(
     ) { uri: Uri? ->
         selectedPDFUri = uri
     }
-
+    val defaultPdfUri = Uri.parse(
+        "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.default_resume}"
+    )
     val defaulImagetUri = Uri.parse(
         "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.default_profile}"
     )
 
-    val defaulPdf = Uri.parse(
-        "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.default_profile}"
-    )
-
+    val pdfUri: Uri = if (selectedPDFUri == null) {
+        defaultPdfUri
+    } else {
+        selectedPDFUri!!
+    }
 
     val imageUri: Uri = if (selectedImageUri == null) {
         defaulImagetUri
     } else {
         selectedImageUri!!
     }
-
-
-    val pdfUri: Uri = if (selectedPDFUri == null) {
-        defaulPdf
-    } else {
-        selectedPDFUri!!
-    }
-
 
 //android 13
     val photoPickerLauncher = rememberLauncherForActivityResult(
@@ -166,22 +142,21 @@ fun ProfilePage(
             TopAppBar(
                 title = {
                     Text(
-                        "Profile", color = MaterialTheme.colorScheme.background, fontSize = 22.sp
+                        "Profile", color = MaterialTheme.colorScheme.onBackground, fontSize = 22.sp
                     )
                 }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF3B6CFF))
             )
         }) { innerPadding ->
-
+        Spacer(modifier = Modifier.height(25.dp))
         Box(modifier = Modifier.padding(innerPadding)) {
 
-            Spacer(modifier = Modifier.height(25.dp))
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
+                // Profile Image
                 Box(contentAlignment = Alignment.BottomEnd) {
 
                     if (selectedImageUri != null) {
@@ -217,19 +192,10 @@ fun ProfilePage(
                         }
 
 
-                    } else if (state is AsyncImagePainter.State.Success) {
+                    } else {
 
                         AsyncImage(
                             model = imageRequest,
-                            contentDescription = "Profile Image",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .size(100.dp)
-                                .clip(CircleShape)
-                        )
-                    } else {
-                        AsyncImage(
-                            model = R.drawable.pf,
                             contentDescription = "Profile Image",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -363,8 +329,10 @@ fun ProfilePage(
                 }) {
                     Text(
 
-                        text = if (currentUser.resumePddUrl.isEmpty()) "Error: No resume selected. Please edit your profile." else "View Your Resume",
-                        color = if (currentUser.resumePddUrl.isEmpty()) Color.Blue else Color.LightGray,
+                        text = if (currentUser.resumePddUrl.isEmpty()) "Error: No resume selected. Please edit your profile." else
+                            "View Your Resume",
+                        color = if (currentUser.resumePddUrl.isEmpty()) Color.Blue else
+                            Color.LightGray,
                         fontSize = 14.sp
                     )
                 }
@@ -391,8 +359,10 @@ fun ProfilePage(
                                 )
                                 .padding(horizontal = 16.dp),
                         ) {
-                            Text(text = selectedPDFUri?.let { getFileNameFromUri(context, it) }
-                                ?: "No file selected", color = MaterialTheme.colorScheme.primary)
+                            Text(
+                                text = selectedPDFUri?.lastPathSegment ?: "Select Resume PDF",
+                                color = MaterialTheme.colorScheme.primary
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(48.dp))
@@ -420,8 +390,11 @@ fun ProfilePage(
 
 
                                     isLoading = true
-                                    val profielImageByteArray = imageUri.uriToByteArray(context)
+                                    val profielImageByteArray =
+                                        imageUri.uriToByteArray(context)
                                     val resumePdfByteArray = pdfUri.uriToByteArray(context)
+
+
                                     profielImageByteArray?.let() {
                                         resumePdfByteArray?.let {
                                             authViewModel.updateProfile(
@@ -432,7 +405,9 @@ fun ProfilePage(
                                                 onResult = { message, boolean ->
                                                     if (boolean) {
                                                         Toast.makeText(
-                                                            context, message, Toast.LENGTH_SHORT
+                                                            context,
+                                                            message,
+                                                            Toast.LENGTH_SHORT
                                                         ).show()
 
                                                         isEditing = false
@@ -441,13 +416,13 @@ fun ProfilePage(
                                                         isLoading = false
 
                                                         Toast.makeText(
-                                                            context, message, Toast.LENGTH_SHORT
+                                                            context,
+                                                            message,
+                                                            Toast.LENGTH_SHORT
                                                         ).show()
                                                     }
 
-                                                }
-
-                                            )
+                                                })
                                         }
                                     }
 
@@ -484,18 +459,14 @@ fun ProfilePage(
 
                 Spacer(modifier = Modifier.weight(1f)) // pushes the button to bottom
                 if (isEditing == false) {
-                    Button(
+                    OutlinedButton(
                         onClick = { authViewModel.logoutUser() },
                         modifier = Modifier,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF3B6CFF),
-                            contentColor = MaterialTheme.colorScheme.background
-                        )
-
-
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
+                        border = BorderStroke(2.dp, Color.Red)
                     ) {
                         Text(
-                            text = "Log Out", fontSize = 18.sp
+                            text = "Log Out", fontSize = 18.sp, color = Color.Red
                         )
                     }
 
@@ -509,7 +480,6 @@ fun ProfilePage(
 
 
     }
-
 
 }
 
