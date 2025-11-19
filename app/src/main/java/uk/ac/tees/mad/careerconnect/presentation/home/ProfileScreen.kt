@@ -463,7 +463,7 @@ fun ProfilePage(
                         onClick = { authViewModel.logoutUser() },
                         modifier = Modifier,
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
-                        border = BorderStroke(2.dp, Color.Red)
+                        border = BorderStroke(2.dp, Color.Blue)
                     ) {
                         Text(
                             text = "Log Out", fontSize = 18.sp, color = Color.Red

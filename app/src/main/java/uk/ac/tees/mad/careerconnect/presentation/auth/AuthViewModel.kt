@@ -39,8 +39,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import uk.ac.tees.mad.careerconnect.R
 import uk.ac.tees.mad.careerconnect.data.remote.SupabaseClientProvider
-import uk.ac.tees.mad.careerconnect.data.repoImpl.RepositoryImpl
-import uk.ac.tees.mad.careerconnect.domain.repo.Repository
+
 import java.security.MessageDigest
 import java.util.StringTokenizer
 import java.util.UUID

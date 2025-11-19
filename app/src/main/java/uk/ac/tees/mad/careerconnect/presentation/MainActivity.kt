@@ -32,6 +32,9 @@ class MainActivity : ComponentActivity() {
                         authViewModel = authViewModel,
                         homeViewModel = homeViewModel
                     )
+                    homeViewModel.fetchJobsFromFirestore()
+//                    homeViewModel.addSampleJobsToFirestoreSuspend()
+
                 }
             }
         }
