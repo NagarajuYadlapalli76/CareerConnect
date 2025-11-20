@@ -33,7 +33,6 @@ class MainActivity : ComponentActivity() {
                         homeViewModel = homeViewModel
                     )
                     homeViewModel.fetchJobsFromFirestore()
-//                    homeViewModel.addSampleJobsToFirestoreSuspend()
 
                 }
             }
