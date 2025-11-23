@@ -2,6 +2,7 @@ package uk.ac.tees.mad.careerconnect.presentation.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,7 +53,9 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import okhttp3.Route
 import uk.ac.tees.mad.careerconnect.presentation.auth.AuthViewModel
+import uk.ac.tees.mad.careerconnect.presentation.navigation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,7 +71,7 @@ fun JobPage(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
 
-    Scaffold (
+    Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
@@ -80,12 +83,12 @@ fun JobPage(
                 )
             )
         }
-    ){ paddingValues ->
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 8.dp)
         ) {
             Spacer(modifier = Modifier.height(10.dp))
             OutlinedTextField(
@@ -110,10 +113,11 @@ fun JobPage(
 
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize().padding(vertical = 10.dp),
+                    .fillMaxSize()
+                    .padding(vertical = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
 
-            ) {
+                ) {
                 items(jobs) {
                     JobCard(
                         title = it.title,
@@ -123,7 +127,24 @@ fun JobPage(
                         minSal = it.minSalary,
                         maxSal = it.minSalary,
                         modifier = Modifier.padding(horizontal = 6.dp),
-                        tag = it.type, )
+                        tag = it.type,
+                        onClick = {
+                            navController.navigate(Routes.JobDetailScreen(
+                                id = it.id  ,
+                                title = it.title,
+                                compName = it.compName,
+                                location = it.location,
+                                type = it.type,
+                                numApplications = it.numApplications,
+                                minSalary = it.minSalary,
+                                maxSalary = it.maxSalary,
+                                description = it.description,
+                                publishedDate = it.publishedDate,
+                                requirements = it.requirements,
+
+                            ))
+                        },
+                    )
                 }
                 item(1) { Spacer(modifier = Modifier.height(50.dp)) }
 
@@ -148,12 +169,17 @@ fun JobCard(
     minSal: String,
     maxSal: String,
     modifier: Modifier = Modifier,
-) {
+    onClick: () -> Unit,
+
+    ) {
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .clickable {
+                onClick()
+            },
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
@@ -219,7 +245,6 @@ fun JobCard(
         }
     }
 }
-
 
 
 //item(0) {

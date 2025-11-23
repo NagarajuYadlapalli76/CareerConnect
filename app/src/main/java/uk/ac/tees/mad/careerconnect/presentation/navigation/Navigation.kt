@@ -20,6 +20,7 @@ import uk.ac.tees.mad.careerconnect.presentation.auth.AuthViewModel
 import uk.ac.tees.mad.careerconnect.presentation.auth.LoginScreen
 import uk.ac.tees.mad.careerconnect.presentation.home.HomeScreen
 import uk.ac.tees.mad.careerconnect.presentation.home.HomeViewModel
+import uk.ac.tees.mad.careerconnect.presentation.home.utilsScreen.JobDetailScreen
 
 @Composable
 fun Navigation(
@@ -102,6 +103,30 @@ fun Navigation(
 
                 navController = navController
             )
+
+        }
+
+
+        composable<Routes.JobDetailScreen> {
+            val arg = it.toRoute<Routes.JobDetailScreen>()
+
+
+            JobDetailScreen(
+                title = arg.title,
+                compName = arg.compName,
+                location = arg.location,
+                type = arg.type,
+                numApplications = arg.numApplications,
+                minSalary = arg.minSalary,
+                maxSalary = arg.maxSalary,
+                description = arg.description,
+                publishedDate = arg.publishedDate,
+                requirements = arg.requirements,
+                id  = arg.id    ,
+                onBackClick = {},
+                onApplyClick = {}
+            )
+
 
         }
 
