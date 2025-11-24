@@ -3,13 +3,17 @@ package uk.ac.tees.mad.careerconnect.presentation.home
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -24,24 +28,36 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val jobDao: JobDao) : ViewModel() {
 
-    val allJobs: StateFlow<List<JobEntity>> = jobDao.getAllJobs()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
 
+//    val allJobs: StateFlow<List<JobEntity>> = jobDao.getAllJobs()
+//        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+
+
+    private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
     private val searchQuery = MutableStateFlow(SearchFilter())
+
+
+    var currentPage = 2
+    private val _pageSize = MutableStateFlow(10) // start with 10
+    val pageSize: StateFlow<Int> = _pageSize
+
+    fun loadMore() {
+        _pageSize.value += 10
+    }
 
     fun updateSearch(title: String? = null, location: String? = null, type: String? = null) {
         searchQuery.value = SearchFilter(title, location, type)
     }
-
-
-
-    val jobs: StateFlow<List<JobEntity>> = searchQuery
-
-        .flatMapLatest { filter ->
-
+    // ✅ Combine pageSize + search query
+    val jobs: StateFlow<List<JobEntity>> =
+        combine(searchQuery, _pageSize) { filter, size ->
+            filter to size
+        }.flatMapLatest { (filter, size) ->
             if (filter.isEmpty()) {
-                jobDao.getAllJobs()
+                jobDao.getAllJobs(size)
             } else {
                 jobDao.searchJobs(
                     title = filter.title,
@@ -49,9 +65,7 @@ class HomeViewModel @Inject constructor(private val jobDao: JobDao) : ViewModel(
                     type = filter.type
                 )
             }
-
-        }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
 
     private fun insertJobs(jobs: List<JobEntity>) {
@@ -116,6 +130,55 @@ class HomeViewModel @Inject constructor(private val jobDao: JobDao) : ViewModel(
     }
 
 
+    fun addAppliedJob(jobId: String, onResult: (Boolean, String?) -> Unit) {
+        try {
+
+            val uid: String = auth.currentUser?.uid ?: ""
+
+            val snapshot = firestore.collection("user").document(uid)
+
+            snapshot.update("appliedJob", FieldValue.arrayUnion(jobId))
+                .addOnSuccessListener {
+                    onResult(true, "apply successfully")
+                }
+                .addOnFailureListener { e ->
+                    onResult(false, e.message)
+                }
+        } catch (e: Exception) {
+            onResult(false, e.localizedMessage)
+        }
+    }
+
+
+
+
+    val _appliedJobs = MutableStateFlow<List<JobEntity>>(emptyList())
+    val appliedJobs: StateFlow<List<JobEntity>> = _appliedJobs
+
+    fun getAppliedJobs() {
+        val uid = auth.currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            try {
+                // Fetch user document from Firestore
+                val snapshot = db.collection("user").document(uid).get().await()
+                val appliedJobIds = snapshot.get("appliedJob") as? List<String> ?: emptyList()
+
+                if (appliedJobIds.isNotEmpty()) {
+                    jobDao.getJobsByIds(appliedJobIds).collect { jobs ->
+                        _appliedJobs.value = jobs
+                    }
+                } else {
+                    _appliedJobs.value = emptyList()
+                }
+            } catch (e: Exception) {
+                _appliedJobs.value = emptyList()
+            }
+        }
+    }
+
+
+
 }
 
 
@@ -158,8 +221,7 @@ data class SearchFilter(
     }
 }
 
-
-
+data class getAppliedJobs(val appliedJob: List<String>)
 
 
 val sampleJobs = listOf(

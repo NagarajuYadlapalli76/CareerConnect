@@ -122,9 +122,9 @@ fun Navigation(
                 description = arg.description,
                 publishedDate = arg.publishedDate,
                 requirements = arg.requirements,
-                id  = arg.id    ,
-                onBackClick = {},
-                onApplyClick = {}
+                id = arg.id,
+                onBackClick = { navController.popBackStack()},
+                homeViewModel = homeViewModel,
             )
 
 

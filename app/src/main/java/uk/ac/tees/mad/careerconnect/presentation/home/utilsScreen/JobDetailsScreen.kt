@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.careerconnect.presentation.home.utilsScreen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,12 +26,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.websocket.Frame
+import uk.ac.tees.mad.careerconnect.presentation.home.HomeViewModel
 import uk.ac.tees.mad.careerconnect.presentation.navigation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,11 +55,12 @@ fun JobDetailScreen(
     description: String,
     publishedDate: String,
     requirements: String,
-    onBackClick: () -> Unit = {},
-    onApplyClick: () -> Unit = {}
-) {
-    val colorScheme = MaterialTheme.colorScheme
+    onBackClick: () -> Unit = {}, homeViewModel: HomeViewModel,
 
+    ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val context = LocalContext.current
+    var isApplied by rememberSaveable { mutableStateOf(false) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -72,7 +81,16 @@ fun JobDetailScreen(
         },
         bottomBar = {
             Button(
-                onClick = { onApplyClick() },
+                onClick = {
+                    homeViewModel.addAppliedJob(id, onResult = { condition, message ->
+                        if (condition) {
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                            isApplied = !isApplied
+                        } else {
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
@@ -82,8 +100,9 @@ fun JobDetailScreen(
                     contentColor = colorScheme.onPrimary
                 )
             ) {
-                Text("Apply Now", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(if (isApplied) "Successfully Applied" else "Apply Now", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
+            Spacer(modifier = Modifier.height(24.dp))
         },
         containerColor = colorScheme.background
     ) { paddingValues ->
@@ -187,7 +206,7 @@ fun JobDetailScreen(
         Spacer(modifier = Modifier.height(24.dp))
     }
 
-    Spacer(modifier = Modifier.height(24.dp))
+
 }
 
 
