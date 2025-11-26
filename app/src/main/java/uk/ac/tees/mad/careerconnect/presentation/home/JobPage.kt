@@ -150,13 +150,8 @@ fun JobPage(
 
                                     )
                             )
-                        },
+                        }
                     )
-
-
-
-
-
 
                     if (index == jobs.lastIndex) {
 

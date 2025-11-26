@@ -97,18 +97,11 @@ fun ProfilePage(
     ) { uri: Uri? ->
         selectedPDFUri = uri
     }
-    val defaultPdfUri = Uri.parse(
-        "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.default_resume}"
-    )
+
     val defaulImagetUri = Uri.parse(
         "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.default_profile}"
     )
 
-    val pdfUri: Uri = if (selectedPDFUri == null) {
-        defaultPdfUri
-    } else {
-        selectedPDFUri!!
-    }
 
     val imageUri: Uri = if (selectedImageUri == null) {
         defaulImagetUri
@@ -388,45 +381,56 @@ fun ProfilePage(
 
                                 onClick = {
 
+                                    when {
 
-                                    isLoading = true
-                                    val profielImageByteArray =
-                                        imageUri.uriToByteArray(context)
-                                    val resumePdfByteArray = pdfUri.uriToByteArray(context)
+                                        selectedPDFUri == null -> {
+                                            Toast.makeText(
+                                                context,
+                                                "Please select your resume",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
 
+                                        else -> {
+                                            isLoading = true
+                                            val profielImageByteArray =
+                                                imageUri.uriToByteArray(context)
+                                            val resumePdfByteArray =
+                                                selectedPDFUri?.uriToByteArray(context)
+                                            profielImageByteArray?.let() {
+                                                resumePdfByteArray?.let {
+                                                    authViewModel.updateProfile(
+                                                        ProfielImageByteArray = profielImageByteArray,
+                                                        ResumePdfByteArray = resumePdfByteArray,
+                                                        name = if (newName.isNotBlank()) newName else currentUser.name,
+                                                        mobNumber = if (newName.isNotBlank()) newMobile else currentUser.mobNumber,
+                                                        onResult = { message, boolean ->
+                                                            if (boolean) {
+                                                                Toast.makeText(
+                                                                    context,
+                                                                    message,
+                                                                    Toast.LENGTH_SHORT
+                                                                ).show()
 
-                                    profielImageByteArray?.let() {
-                                        resumePdfByteArray?.let {
-                                            authViewModel.updateProfile(
-                                                ProfielImageByteArray = profielImageByteArray,
-                                                ResumePdfByteArray = resumePdfByteArray,
-                                                name = if (newName.isNotBlank()) newName else currentUser.name,
-                                                mobNumber = if (newName.isNotBlank()) newMobile else currentUser.mobNumber,
-                                                onResult = { message, boolean ->
-                                                    if (boolean) {
-                                                        Toast.makeText(
-                                                            context,
-                                                            message,
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
+                                                                isEditing = false
 
-                                                        isEditing = false
+                                                            } else {
+                                                                isLoading = false
 
-                                                    } else {
-                                                        isLoading = false
+                                                                Toast.makeText(
+                                                                    context,
+                                                                    message,
+                                                                    Toast.LENGTH_SHORT
+                                                                ).show()
+                                                            }
 
-                                                        Toast.makeText(
-                                                            context,
-                                                            message,
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
-                                                    }
+                                                        })
+                                                }
+                                            }
 
-                                                })
+                                            update = !update
                                         }
                                     }
-
-                                    update = !update
 
 
                                 },
@@ -459,14 +463,12 @@ fun ProfilePage(
 
                 Spacer(modifier = Modifier.weight(1f)) // pushes the button to bottom
                 if (isEditing == false) {
-                    OutlinedButton(
+                    Button (
                         onClick = { authViewModel.logoutUser() },
                         modifier = Modifier,
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
-                        border = BorderStroke(2.dp, Color.Blue)
                     ) {
                         Text(
-                            text = "Log Out", fontSize = 18.sp, color = Color.Red
+                            text = "Log Out", fontSize = 18.sp
                         )
                     }
 

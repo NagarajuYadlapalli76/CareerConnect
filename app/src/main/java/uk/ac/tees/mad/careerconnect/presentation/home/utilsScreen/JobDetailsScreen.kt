@@ -83,11 +83,18 @@ fun JobDetailScreen(
             Button(
                 onClick = {
                     homeViewModel.addAppliedJob(id, onResult = { condition, message ->
+
+
+
                         if (condition) {
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                            isApplied = !isApplied
+
                         } else {
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
+
+                        if (message == "Already applied to this job"){
+                            isApplied = true
                         }
                     })
                 },

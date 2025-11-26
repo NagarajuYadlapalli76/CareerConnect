@@ -12,12 +12,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CareerConnect" >
+        android:theme="@style/Theme.CareerConnect.Splash" >
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.CareerConnect" >
+            android:theme="@style/Theme.CareerConnect.Splash" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

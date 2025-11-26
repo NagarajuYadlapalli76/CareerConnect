@@ -1,4 +1,3 @@
-
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
@@ -55,7 +54,7 @@ fun SignUpScreen(authViewModel: AuthViewModel, navController: NavController) {
     var Triggeer by rememberSaveable { mutableStateOf(false) }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var isLoading by rememberSaveable { mutableStateOf(false) }
-
+    var isLoading2 by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Triggeer) {
         delay(3000)
         passwordVisible = !passwordVisible
@@ -64,7 +63,6 @@ fun SignUpScreen(authViewModel: AuthViewModel, navController: NavController) {
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-
 
 
     val cornerShape = RoundedCornerShape(14.dp)
@@ -112,8 +110,7 @@ fun SignUpScreen(authViewModel: AuthViewModel, navController: NavController) {
             // Name
             OutlinedTextField(
                 value = name,
-                onValueChange = {
-                    input ->
+                onValueChange = { input ->
                     name = input.split(" ").joinToString(" ") { word ->
                         if (word.isNotEmpty()) word.replaceFirstChar { it.uppercase() }
                         else word
@@ -236,22 +233,22 @@ fun SignUpScreen(authViewModel: AuthViewModel, navController: NavController) {
             TextButton(
                 onClick = {
 
-                    isLoading = true
+                    isLoading2 = true
 
-authViewModel.handleGoogleSignIn(
-    context = context,
-    onResult = { message, success ->
-        if (success) {
-            isLoading = true
-            navController.navigate(Routes.HomeScreen)
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            isLoading = true
-        } else {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        }
-    }
-)
-                    isLoading = false
+                    authViewModel.handleGoogleSignIn(
+                        context = context,
+                        onResult = { message, success ->
+                            if (success) {
+                                isLoading2 = false
+                                navController.navigate(Routes.HomeScreen)
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                                isLoading = false
+                            } else {
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    )
+
 
                 },
                 modifier = Modifier
@@ -262,7 +259,9 @@ authViewModel.handleGoogleSignIn(
                     containerColor = Color(0xCBFFFFFF),
                     contentColor = MaterialTheme.colorScheme.onBackground
                 )
-            ) {
+            ) { if (isLoading2){
+                CircularProgressIndicator()
+            }else{
                 Icon(
                     painter = painterResource(id = R.drawable.google),
                     contentDescription = "Google Icon",
@@ -276,6 +275,8 @@ authViewModel.handleGoogleSignIn(
                         fontWeight = FontWeight.Medium, color = Color.Black
                     )
                 )
+            }
+
             }
 
             Spacer(modifier = Modifier.height(16.dp))
