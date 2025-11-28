@@ -41,7 +41,7 @@ class HomeViewModel @Inject constructor(private val jobDao: JobDao) : ViewModel(
 
 
     var currentPage = 2
-    private val _pageSize = MutableStateFlow(10) // start with 10
+    private val _pageSize = MutableStateFlow(10)
     val pageSize: StateFlow<Int> = _pageSize
 
     fun loadMore() {
@@ -131,22 +131,32 @@ class HomeViewModel @Inject constructor(private val jobDao: JobDao) : ViewModel(
 
 
     fun addAppliedJob(jobId: String, onResult: (Boolean, String?) -> Unit) {
-        try {
 
-            val uid: String = auth.currentUser?.uid ?: ""
+        val uid = auth.currentUser?.uid ?: return onResult(false, "User not logged in")
 
-            val snapshot = firestore.collection("user").document(uid)
+        val userRef = firestore.collection("user").document(uid)
 
-            snapshot.update("appliedJob", FieldValue.arrayUnion(jobId))
-                .addOnSuccessListener {
-                    onResult(true, "apply successfully")
+        userRef.get()
+            .addOnSuccessListener { doc ->
+                val appliedJobs = doc.get("appliedJob") as? List<String> ?: emptyList()
+
+                if (appliedJobs.contains(jobId)) {
+
+                    onResult(false, "Already applied to this job")
+                } else {
+
+                    userRef.update("appliedJob", FieldValue.arrayUnion(jobId))
+                        .addOnSuccessListener {
+                            onResult(true, "Applied successfully")
+                        }
+                        .addOnFailureListener { e ->
+                            onResult(false, e.message)
+                        }
                 }
-                .addOnFailureListener { e ->
-                    onResult(false, e.message)
-                }
-        } catch (e: Exception) {
-            onResult(false, e.localizedMessage)
-        }
+            }
+            .addOnFailureListener { e ->
+                onResult(false, e.message)
+            }
     }
 
 
@@ -159,8 +169,8 @@ class HomeViewModel @Inject constructor(private val jobDao: JobDao) : ViewModel(
         val uid = auth.currentUser?.uid ?: return
 
         viewModelScope.launch {
-            try {
-                // Fetch user document from Firestore
+
+
                 val snapshot = db.collection("user").document(uid).get().await()
                 val appliedJobIds = snapshot.get("appliedJob") as? List<String> ?: emptyList()
 
@@ -171,10 +181,12 @@ class HomeViewModel @Inject constructor(private val jobDao: JobDao) : ViewModel(
                 } else {
                     _appliedJobs.value = emptyList()
                 }
-            } catch (e: Exception) {
-                _appliedJobs.value = emptyList()
-            }
+
         }
+    }
+
+    init {
+        getAppliedJobs()
     }
 
 
