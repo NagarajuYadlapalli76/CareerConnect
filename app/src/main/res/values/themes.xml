@@ -5,13 +5,13 @@
         <item name="android:windowBackground">@color/white</item>
     </style>
 
-<!--    <style name="Theme.CareerConnect.Splash" parent="Theme.SplashScreen">-->
-<!--        <item name="windowSplashScreenBackground">@color/app</item>-->
-<!--        <item name="windowSplashScreenAnimatedIcon">@drawable/fff</item>-->
-<!--        <item name="postSplashScreenTheme">@style/Theme.CareerConnect</item>-->
-<!--        <item name="windowSplashScreenAnimationDuration">300</item>-->
-<!--        <item name="windowSplashScreenIconBackgroundColor">@color/white</item>-->
-<!--    </style>-->
+    <style name="Theme.CareerConnect.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/app</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/fff</item>
+        <item name="postSplashScreenTheme">@style/Theme.CareerConnect</item>
+        <item name="windowSplashScreenAnimationDuration">300</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/white</item>
+    </style>
 
 
 </resources>

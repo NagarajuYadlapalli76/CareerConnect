@@ -168,16 +168,16 @@ fun JobPage(
 
 
 
-                item(1) {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        if (isProgress) {
-                            CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
-                        }
-
-                    }
-
-                    Spacer(modifier = Modifier.height(50.dp))
-                }
+//                item(1) {
+//                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+//                        if (isProgress) {
+//                            CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
+//                        }
+//
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(50.dp))
+//                }
 
 
             }

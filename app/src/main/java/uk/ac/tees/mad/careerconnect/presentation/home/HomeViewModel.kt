@@ -51,7 +51,7 @@ class HomeViewModel @Inject constructor(private val jobDao: JobDao) : ViewModel(
     fun updateSearch(title: String? = null, location: String? = null, type: String? = null) {
         searchQuery.value = SearchFilter(title, location, type)
     }
-    // ✅ Combine pageSize + search query
+
     val jobs: StateFlow<List<JobEntity>> =
         combine(searchQuery, _pageSize) { filter, size ->
             filter to size

@@ -20,6 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.delay
 import uk.ac.tees.mad.careerconnect.presentation.auth.AuthViewModel
 import uk.ac.tees.mad.careerconnect.presentation.navigation.Routes
 
@@ -39,12 +43,18 @@ fun ApplicationsPage(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+
+    var isLoading by rememberSaveable { mutableStateOf(true) }
+
+
     LaunchedEffect(Unit) {
 
         homeViewModel.getAppliedJobs()
     }
 
     val jobs by homeViewModel.appliedJobs.collectAsState()
+
+
 
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -64,7 +74,10 @@ fun ApplicationsPage(
         }
     ) { paddingValues ->
 
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(10.dp), contentAlignment = Alignment.Center){
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(10.dp), contentAlignment = Alignment.Center){
             if (jobs.isNotEmpty()){
                 LazyColumn(
                     modifier = Modifier
@@ -107,8 +120,19 @@ fun ApplicationsPage(
                 }
 
 
-            }else{
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
+            }
+            else{
+                if (jobs.isEmpty()){
+
+                    Text("No Application Found")
+
+                } else {
+
+
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
+
+                }
+
             }
         }
     }
