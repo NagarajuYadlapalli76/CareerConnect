@@ -41,4 +41,6 @@ interface JobDao {
     // Fetch a single job by ID
     @Query("SELECT * FROM jobs WHERE id IN (:jobIds)")
     fun getJobsByIds(jobIds: List<String>): Flow<List<JobEntity>>
+    @Query("SELECT * FROM jobs WHERE id IN (:jobIds)")
+    fun savedJos(jobIds: List<String>): Flow<List<JobEntity>>
 }
