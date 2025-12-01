@@ -92,7 +92,8 @@ class AuthViewModel @Inject constructor() : ViewModel() {
                                 uid = userId,
                                 passkey = password,
                                 resumePddUrl = "",
-                                AppliedJob = emptyList()
+                                AppliedJob = emptyList(),
+                                LickedJob = emptyList()
                             )
 
                             db.collection("user").document(userId).set(userInfo)
@@ -160,7 +161,8 @@ class AuthViewModel @Inject constructor() : ViewModel() {
                             uid = currentUser.uid,
                             passkey = "",
                             resumePddUrl = "",
-                            AppliedJob = emptyList()
+                            AppliedJob = emptyList(),
+                            LickedJob = emptyList()
                         )
 
                         db.collection("user").document(currentUser.uid).set(postUserInfo)
@@ -309,6 +311,7 @@ data class PostUserInfo(
     val uid: String,
     val passkey: String,
     val AppliedJob: List<String>,
+    val LickedJob: List<String> ,
 )
 
 data class GetUserInfo(
@@ -321,4 +324,5 @@ data class GetUserInfo(
     val uid: String = "",
     val passkey: String = "",
     val AppliedJob: List<String> = emptyList<String>(),
+    val LickedJob: List<String> = emptyList<String>(),
 )

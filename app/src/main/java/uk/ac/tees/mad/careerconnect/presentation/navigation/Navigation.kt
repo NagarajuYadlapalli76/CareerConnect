@@ -20,6 +20,7 @@ import uk.ac.tees.mad.careerconnect.presentation.auth.AuthViewModel
 import uk.ac.tees.mad.careerconnect.presentation.auth.LoginScreen
 import uk.ac.tees.mad.careerconnect.presentation.home.HomeScreen
 import uk.ac.tees.mad.careerconnect.presentation.home.HomeViewModel
+import uk.ac.tees.mad.careerconnect.presentation.home.SavedJobs
 import uk.ac.tees.mad.careerconnect.presentation.home.utilsScreen.JobDetailScreen
 
 @Composable
@@ -127,6 +128,16 @@ fun Navigation(
                 homeViewModel = homeViewModel,
             )
 
+
+        }
+
+        composable<Routes.SavedJobSScreen> {
+
+
+            SavedJobs(
+                homeViewModel = homeViewModel,
+                navController = navController
+            )
 
         }
 

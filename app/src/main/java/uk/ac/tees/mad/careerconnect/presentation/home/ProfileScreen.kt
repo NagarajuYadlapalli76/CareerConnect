@@ -135,14 +135,15 @@ fun ProfilePage(
             TopAppBar(
                 title = {
                     Text(
-                        "Profile", color = MaterialTheme.colorScheme.onBackground, fontSize = 22.sp
+                        "Profile", color = MaterialTheme.colorScheme.background, fontSize = 22.sp
                     )
                 }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF3B6CFF))
             )
         }) { innerPadding ->
-        Spacer(modifier = Modifier.height(25.dp))
+
         Box(modifier = Modifier.padding(innerPadding)) {
 
+            Spacer(modifier = Modifier.height(25.dp))
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -466,6 +467,12 @@ fun ProfilePage(
                     Button (
                         onClick = { authViewModel.logoutUser() },
                         modifier = Modifier,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF3B6CFF),
+                            contentColor =MaterialTheme.colorScheme.background
+                        )
+
+
                     ) {
                         Text(
                             text = "Log Out", fontSize = 18.sp

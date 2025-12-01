@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -41,22 +44,20 @@ import uk.ac.tees.mad.careerconnect.presentation.navigation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ApplicationsPage(
-    authViewModel: AuthViewModel,
+fun SavedJobs(
+
     homeViewModel: HomeViewModel,
     navController: NavController,
-    modifier: Modifier = Modifier,
-) {
 
-    var isLoading by rememberSaveable { mutableStateOf(true) }
+    ) {
 
 
     LaunchedEffect(Unit) {
 
-        homeViewModel.getAppliedJobs()
+        homeViewModel.getLickJobs()
     }
 
-    val jobs by homeViewModel.appliedJobs.collectAsState()
+    val jobs by homeViewModel.likedJob.collectAsState()
 
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -68,28 +69,31 @@ fun ApplicationsPage(
             TopAppBar(
                 title = {
                     Text(
-                        "Application Status",
+                        "SavedJob",
                         maxLines = 1,
                         color = MaterialTheme.colorScheme.background
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = colorScheme.background
+                        )
+                    }
                 },
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.largeTopAppBarColors(
                     containerColor = Color(0xFF3B6CFF),
                     titleContentColor = Color.White
                 )
+
+
             )
-        }, floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate(Routes.SavedJobSScreen) },
-                containerColor = Color(0xFF3B6CFF),
-                modifier = Modifier.padding(horizontal = 30.dp, vertical = 100.dp)) {
-                Icon(
-                    imageVector = Icons.Default.BookmarkBorder,
-                    contentDescription = "Save",
-                    tint =  MaterialTheme.colorScheme.background
-                )
-            }
         }
+
+
     ) { paddingValues ->
 
         Box(
@@ -145,7 +149,7 @@ fun ApplicationsPage(
             } else {
                 if (jobs.isEmpty()) {
 
-                    Text("No Application Found")
+                    Text("No Saved Jobs Found")
 
                 } else {
 

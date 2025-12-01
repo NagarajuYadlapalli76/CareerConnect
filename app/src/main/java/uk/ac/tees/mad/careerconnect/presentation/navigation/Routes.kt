@@ -32,6 +32,9 @@ sealed class Routes {
         val requirements: String,
     )
 
+    @kotlinx.serialization.Serializable
+    data object SavedJobSScreen
+
 
 }
 

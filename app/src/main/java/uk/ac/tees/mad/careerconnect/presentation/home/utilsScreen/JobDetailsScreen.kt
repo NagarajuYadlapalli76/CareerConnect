@@ -62,6 +62,7 @@ fun JobDetailScreen(
     requirements: String,
     onBackClick: () -> Unit = {}, homeViewModel: HomeViewModel,
 
+
     ) {
     val colorScheme = MaterialTheme.colorScheme
     val context = LocalContext.current
@@ -69,16 +70,16 @@ fun JobDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Job Details", color = colorScheme.onBackground) },
+                title = { Text("Job Details", color = colorScheme.background) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorScheme.background
+                    containerColor = Color(0xFF3B6CFF)
                 ),
                 navigationIcon = {
                     IconButton(onClick = { onBackClick() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = colorScheme.onBackground
+                            tint = colorScheme.background
                         )
                     }
                 }
@@ -123,8 +124,21 @@ fun JobDetailScreen(
             ) {
                 FloatingActionButton(
                     onClick = {
+                        homeViewModel.addLikeJob(id, onResult = { condition, message ->
 
-                        Toast.makeText(context, "Job Saved", Toast.LENGTH_SHORT).show()
+
+
+                            if (condition) {
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
+                            } else {
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
+                            }
+
+
+                        })
+
                     },
                     containerColor = Color(0xFF3B6CFF),
                     modifier = Modifier.padding(horizontal = 30.dp)

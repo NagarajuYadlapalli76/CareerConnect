@@ -80,7 +80,7 @@ fun JobPage(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
-                title = { Text("Career Connect", maxLines = 1) },
+                title = { Text("Career Connect", maxLines = 1, color = MaterialTheme.colorScheme.background) },
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.largeTopAppBarColors(
                     containerColor = Color(0xFF3B6CFF),

@@ -160,10 +160,41 @@ class HomeViewModel @Inject constructor(private val jobDao: JobDao) : ViewModel(
     }
 
 
+    fun addLikeJob(jobId: String, onResult: (Boolean, String?) -> Unit) {
 
+        val uid = auth.currentUser?.uid ?: return onResult(false, "User not logged in")
 
-    val _appliedJobs = MutableStateFlow<List<JobEntity>>(emptyList())
+        val userRef = firestore.collection("user").document(uid)
+
+        userRef.get()
+            .addOnSuccessListener { doc ->
+                val appliedJobs = doc.get("lickedJob") as? List<String> ?: emptyList()
+
+                if (appliedJobs.contains(jobId)) {
+
+                    onResult(false, "Already Saved this job")
+                } else {
+
+                    userRef.update("lickedJob", FieldValue.arrayUnion(jobId))
+                        .addOnSuccessListener {
+                            onResult(true, "Saved successfully")
+                        }
+                        .addOnFailureListener { e ->
+                            onResult(false, e.message)
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                onResult(false, e.message)
+            }
+    }
+
+   private val _appliedJobs = MutableStateFlow<List<JobEntity>>(emptyList())
     val appliedJobs: StateFlow<List<JobEntity>> = _appliedJobs
+
+
+   private val _likedJob = MutableStateFlow<List<JobEntity>>(emptyList())
+    val likedJob: StateFlow<List<JobEntity>> = _likedJob
 
     fun getAppliedJobs() {
         val uid = auth.currentUser?.uid ?: return
@@ -185,8 +216,31 @@ class HomeViewModel @Inject constructor(private val jobDao: JobDao) : ViewModel(
         }
     }
 
+
+    fun getLickJobs() {
+        val uid = auth.currentUser?.uid ?: return
+
+        viewModelScope.launch {
+
+
+            val snapshot = db.collection("user").document(uid).get().await()
+            val likedJobIds = snapshot.get("lickedJob") as? List<String> ?: emptyList()
+
+
+            if (likedJobIds.isNotEmpty()) {
+                jobDao.savedJos(likedJobIds).collect { jobs ->
+                    _likedJob.value = jobs
+                }
+            } else {
+                _likedJob.value = emptyList()
+            }
+
+        }
+    }
+
     init {
         getAppliedJobs()
+        getLickJobs()
     }
 
 
