@@ -244,7 +244,13 @@ fun JobCard(
             Row {
                 Box(
                     modifier = Modifier
-                        .background(Color(0xFFE3E3F0), shape = RoundedCornerShape(8.dp))
+                        .background(
+                            color = if (tag.equals("Internship", ignoreCase = true))
+                                Color(0xFFB3E5FC)
+                            else
+                                Color(0xFFC1FFDA),
+                            shape = RoundedCornerShape(8.dp)
+                        )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                         .padding(end = 4.dp)
                 ) {

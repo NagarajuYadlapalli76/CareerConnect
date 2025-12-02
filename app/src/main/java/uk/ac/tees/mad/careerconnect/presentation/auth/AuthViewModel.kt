@@ -51,7 +51,6 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 
 
     private val _currentUserData = MutableStateFlow(GetUserInfo())
-
     val currentUserData: StateFlow<GetUserInfo> = _currentUserData
 
     val db = FirebaseFirestore.getInstance()
@@ -86,7 +85,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
                             val userInfo = PostUserInfo(
                                 profileImageUrl = "",
                                 title = "Job Seeker",
-                                mobNumber = "7668532625",
+                                mobNumber = "",
                                 name = name,
                                 email = email,
                                 uid = userId,
@@ -155,7 +154,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
                         val postUserInfo = PostUserInfo(
                             profileImageUrl = currentUser.photoUrl?.toString() ?: "",
                             title = "",
-                            mobNumber = "7668532625", // ⚠️ hardcoded, maybe replace later
+                            mobNumber = "", // ⚠️ hardcoded, maybe replace later
                             name = currentUser.displayName ?: "",
                             email = currentUser.email ?: "",
                             uid = currentUser.uid,

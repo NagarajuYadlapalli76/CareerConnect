@@ -141,7 +141,7 @@ fun JobDetailScreen(
 
                     },
                     containerColor = Color(0xFF3B6CFF),
-                    modifier = Modifier.padding(horizontal = 30.dp)
+                    modifier = Modifier.padding(horizontal = 15.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.BookmarkBorder,
@@ -160,7 +160,7 @@ fun JobDetailScreen(
                         context.startActivity(Intent.createChooser(sendIntent, "Share Job"))
                     },
                     containerColor = Color(0xFF3B6CFF),
-                    modifier = Modifier.padding(horizontal = 30.dp)
+                    modifier = Modifier.padding(horizontal = 15.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Share,

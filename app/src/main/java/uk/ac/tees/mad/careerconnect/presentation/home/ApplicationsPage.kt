@@ -82,7 +82,7 @@ fun ApplicationsPage(
         }, floatingActionButton = {
             FloatingActionButton(onClick = { navController.navigate(Routes.SavedJobSScreen) },
                 containerColor = Color(0xFF3B6CFF),
-                modifier = Modifier.padding(horizontal = 30.dp, vertical = 100.dp)) {
+                modifier = Modifier.padding(horizontal = 15.dp, vertical = 100.dp)) {
                 Icon(
                     imageVector = Icons.Default.BookmarkBorder,
                     contentDescription = "Save",

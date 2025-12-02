@@ -71,7 +71,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
-// or latest
     implementation("com.cloudinary:cloudinary-android:3.1.1")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
@@ -84,25 +83,14 @@ dependencies {
     implementation("androidx.room:room-runtime:2.7.0-alpha05")
     kapt("androidx.room:room-compiler:2.7.0-alpha05")
     implementation("androidx.room:room-ktx:2.7.0-alpha05")
-
-
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-
-
     implementation("com.google.dagger:hilt-android:2.57.1")
     kapt("com.google.dagger:hilt-compiler:2.57.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.compose.material:material-icons-extended:1.7.0")
-
     implementation("androidx.compose.runtime:runtime:1.9.2")
     implementation("androidx.compose.compiler:compiler:1.5.15")
-
-
-
-
-
-
 
     implementation(libs.kotlinx.serialization)
 
