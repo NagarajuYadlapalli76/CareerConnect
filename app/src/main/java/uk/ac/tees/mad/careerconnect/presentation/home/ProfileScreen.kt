@@ -181,7 +181,7 @@ fun ProfilePage(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Profile Image
+
                 Box(contentAlignment = Alignment.BottomEnd) {
 
                     if (selectedImageUri != null) {
@@ -445,7 +445,9 @@ fun ProfilePage(
                                                         ).show()
                                                     }
 
-                                                })
+                                                }
+
+                                            )
                                         }
                                     }
 

@@ -193,7 +193,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 
                 val googleIdOption =
                     GetGoogleIdOption.Builder().setFilterByAuthorizedAccounts(false)
-                        .setServerClientId("828855416531-mhri1lkubrdeicd79m9tiofbolqi42is.apps.googleusercontent.com")
+                        .setServerClientId("757975169602-lbvqi3lsef06j4douu5o0p17bfgire95.apps.googleusercontent.com")
                         .setAutoSelectEnabled(true).build()
 
                 val request =

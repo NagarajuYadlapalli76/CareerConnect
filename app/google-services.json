@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "828855416531",
-    "project_id": "career-connect-73fd2",
-    "storage_bucket": "career-connect-73fd2.firebasestorage.app"
+    "project_number": "757975169602",
+    "project_id": "careerconnect-931ac",
+    "storage_bucket": "careerconnect-931ac.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:828855416531:android:260c0606922f9aa7100626",
+        "mobilesdk_app_id": "1:757975169602:android:20e633d09d0202168f8bdb",
         "android_client_info": {
           "package_name": "uk.ac.tees.mad.careerconnect"
         }
       },
       "oauth_client": [
         {
-          "client_id": "828855416531-1i14aggu33i1ehmhg88fhij0o22qtogi.apps.googleusercontent.com",
+          "client_id": "757975169602-fq4rkh90ufvsri3q8lfifn2k8k4fvkoc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "uk.ac.tees.mad.careerconnect",
-            "certificate_hash": "aa9b2fef4575569bd5c36c45235f8f2b2dc452cd"
+            "certificate_hash": "083a5a6bd2cc92e226064bbf34318c0ab0f9ad51"
           }
         },
         {
-          "client_id": "828855416531-mhri1lkubrdeicd79m9tiofbolqi42is.apps.googleusercontent.com",
+          "client_id": "757975169602-lbvqi3lsef06j4douu5o0p17bfgire95.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBkHn18qcQekMh4Ex_ok0bhpwxjPIZZmlw"
+          "current_key": "AIzaSyCuB5-QULwiqoUyw9VN1sb_d8T0HzxwoOo"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "828855416531-mhri1lkubrdeicd79m9tiofbolqi42is.apps.googleusercontent.com",
+              "client_id": "757975169602-lbvqi3lsef06j4douu5o0p17bfgire95.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

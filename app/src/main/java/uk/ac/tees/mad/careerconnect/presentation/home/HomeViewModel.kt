@@ -39,7 +39,6 @@ class HomeViewModel @Inject constructor(private val jobDao: JobDao) : ViewModel(
     private val auth = FirebaseAuth.getInstance()
     private val searchQuery = MutableStateFlow(SearchFilter())
 
-
     var currentPage = 2
     private val _pageSize = MutableStateFlow(10)
     val pageSize: StateFlow<Int> = _pageSize
